@@ -86,19 +86,27 @@
         <button id="donateYura" class="game-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="game-btn">Отправить донат Андрею (🐟)</button>
     </div>
-    <p id="version">v3.1.0</p>
+    <p id="version">v3.1.1</p>
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score;
-        const cheeseImg = new Image();
-        cheeseImg.src = "https://em-content.zobj.net/source/apple/354/cheese-wedge_1f9c0.png";
-        const fishImg = new Image();
-        fishImg.src = "https://em-content.zobj.net/source/apple/354/fish_1f41f.png";
-        
-        const yuraPhrases = [
-            "Ммм, сырочек! 🤤", "Вкуснотища! 😋", "Сырный кайф! 🧀🔥", "ЮРА доволен! 😍",
-            "Еще давай! 🤩", "Лучшая жизнь — это сырная жизнь! 🧀💛", "Сырный бог благословил ЮРУ! 🙏",
-            "О да, это оно! 🥰", "Сырный экстаз! 🎉", "Вот это улов! 🎯"
-        ];
+
+        function init() {
+            canvas = document.getElementById("gameCanvas");
+            ctx = canvas.getContext("2d");
+
+            snake = [{ x: 200, y: 200 }];
+            direction = { x: 20, y: 0 };
+            cheeses = [randomPosition()];
+            fishes = [randomPosition()];
+            score = 0;
+            gameOver = false;
+
+            document.getElementById("score").innerText = "Счёт: 0";
+            document.getElementById("gameOverScreen").style.display = "none";
+
+            document.addEventListener("keydown", changeDirection);
+            gameLoop();
+        }
 
         function randomPosition() {
             return {
@@ -125,8 +133,8 @@
                 ctx.fill();
             });
 
-            cheeses.forEach(cheese => ctx.drawImage(cheeseImg, cheese.x, cheese.y, 20, 20));
-            fishes.forEach(fish => ctx.drawImage(fishImg, fish.x, fish.y, 20, 20));
+            cheeses.forEach(cheese => ctx.fillText("🧀", cheese.x, cheese.y + 15));
+            fishes.forEach(fish => ctx.fillText("🐟", fish.x, fish.y + 15));
         }
 
         function update() {
@@ -148,7 +156,6 @@
                 cheeses.push(randomPosition());
                 score++;
                 document.getElementById("score").innerText = "Счёт: " + score;
-                document.getElementById("yuraPhrase").innerText = yuraPhrases[Math.floor(Math.random() * yuraPhrases.length)];
             } else {
                 snake.pop();
             }
@@ -169,7 +176,9 @@
             }
         }
 
-        document.getElementById("restartBtn").addEventListener("click", () => init());
+        document.getElementById("restartBtn").addEventListener("click", init);
+        document.getElementById("donateYura").addEventListener("click", () => { cheeses.push(randomPosition()); init(); });
+        document.getElementById("donateAndrey").addEventListener("click", () => { fishes.push(randomPosition()); init(); });
 
         init();
     </script>
