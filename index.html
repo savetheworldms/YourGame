@@ -86,7 +86,7 @@
 </head>
 <body>
     <h1>ЮРА 🐛</h1>
-    <p id="version">v1.3</p>
+    <p id="version">v1.4</p>
     <p>Собирай сыр-косичку (🧀) и избегай корюшку (🐟)!</p>
     <p id="score">Счёт: 0</p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -112,12 +112,10 @@
             document.getElementById("score").innerText = "Счёт: 0";
             score = 0;
 
-            do {
-                cheeses = [randomPosition()];
-                snake = [randomPosition()];
-            } while (snake[0].x === cheeses[0].x && snake[0].y === cheeses[0].y);
+            cheeses = [randomPosition()];
+            fishes = [randomPosition()];
+            snake = [randomPosition()];
 
-            fishes = [randomPosition()]; // Начальная корюшка
             direction = { x: 20, y: 0 };
             gameOver = false;
             speed = 150;
@@ -139,7 +137,6 @@
 
         function draw() {
             if (gameOver) return;
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             ctx.fillStyle = "lime";
@@ -222,11 +219,13 @@
         }
 
         document.getElementById("donateYura").addEventListener("click", () => {
+            if (!gameOver) return;
             let amount = Math.floor(Math.random() * 5) + 1;
             for (let i = 0; i < amount; i++) cheeses.push(randomPosition());
         });
 
         document.getElementById("donateAndrey").addEventListener("click", () => {
+            if (!gameOver) return;
             let amount = Math.floor(Math.random() * 5) + 1;
             for (let i = 0; i < amount; i++) fishes.push(randomPosition());
         });
