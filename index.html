@@ -85,16 +85,16 @@
             "Я ещё не наелся, но уже хочу пилить кастдев на тему сыра! 📞💼"
         ];
 
-        function randomPosition() {
-            let pos;
-            do {
-                pos = {
-                    x: Math.floor(Math.random() * 20) * 20,
-                    y: Math.floor(Math.random() * 20) * 20
-                };
-            } while (fish.some(f => f.x === pos.x && f.y === pos.y) || (cheese && cheese.x === pos.x && cheese.y === pos.y));
-            return pos;
-        }
+function randomPosition() {
+    let pos;
+    do {
+        pos = {
+            x: Math.floor(Math.random() * 20) * 20,
+            y: Math.floor(Math.random() * 20) * 20
+        };
+    } while (Array.isArray(fish) && fish.some(f => f.x === pos.x && f.y === pos.y) || (cheese && cheese.x === pos.x && cheese.y === pos.y));
+    return pos;
+}
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
