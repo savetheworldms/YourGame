@@ -121,6 +121,11 @@
             else if (key === 40 && direction.y === 0) direction = { x: 0, y: 20 };
         }
 
+function endGame() {
+    gameOver = true;
+    document.getElementById("gameOverScreen").style.display = "block";
+}
+
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "purple";
