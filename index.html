@@ -31,10 +31,34 @@
             text-align: center;
             box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.8);
         }
+        .donate-btn {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 24px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.2s;
+            box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.5);
+        }
+        #donateYura {
+            background: orange;
+            color: white;
+        }
+        #donateYura:hover {
+            background: darkorange;
+        }
+        #donateAndrey {
+            background: blue;
+            color: white;
+        }
+        #donateAndrey:hover {
+            background: darkblue;
+        }
         #restartBtn {
             background: lime;
             color: black;
-            border: none;
             padding: 12px 24px;
             font-size: 20px;
             cursor: pointer;
@@ -60,10 +84,13 @@
     <div id="gameOverScreen">
         <h2>ЮРА наелся корюшки и проиграл! 🐟💀</h2>
         <button id="restartBtn">Начать заново</button>
+        <br><br>
+        <button id="donateYura" class="donate-btn">Отправить донат Юре (🧀)</button>
+        <button id="donateAndrey" class="donate-btn">Отправить донат Андрею (🐟)</button>
     </div>
 
     <script>
-        let canvas, ctx, snake, direction, cheese, fishes, gameOver, speed, firstMove, score;
+        let canvas, ctx, snake, direction, cheeses, fishes, gameOver, speed, firstMove, score;
         let eatSound = new Audio("https://www.fesliyanstudios.com/play-mp3/438");
 
         function init() {
@@ -76,9 +103,9 @@
             score = 0;
 
             do {
-                cheese = randomPosition();
+                cheeses = [randomPosition()];
                 snake = [randomPosition()];
-            } while (snake[0].x === cheese.x && snake[0].y === cheese.y);
+            } while (snake[0].x === cheeses[0].x && snake[0].y === cheeses[0].y);
 
             fishes = [randomPosition()]; // Начальная корюшка
             direction = { x: 20, y: 0 };
@@ -111,11 +138,11 @@
                 ctx.beginPath();
                 ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
                 ctx.fill();
-                if (index === 0) ctx.fillStyle = "green"; // Голова выделена
+                if (index === 0) ctx.fillStyle = "green";
             });
 
-            // Рисуем сыр 🧀 (большой эмодзи)
-            drawEmoji(cheese.x, cheese.y, "🧀");
+            // Рисуем сыры 🧀
+            cheeses.forEach(cheese => drawEmoji(cheese.x, cheese.y, "🧀"));
 
             // Рисуем всех корюшек 🐟
             fishes.forEach(fish => drawEmoji(fish.x, fish.y, "🐟"));
@@ -131,37 +158,35 @@
 
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
-            // Проверка на столкновение с любой корюшкой
             if (fishes.some(fish => fish.x === newHead.x && fish.y === newHead.y)) {
-                console.log("❌ ЮРА съел корюшку и проиграл!");
                 endGame();
                 return;
             }
 
-            // Проверка на выход за границы
             if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
                 endGame();
                 return;
             }
 
-            // Проверка на столкновение с самим собой
             if (snake.some((segment, index) => index !== 0 && segment.x === newHead.x && segment.y === newHead.y)) {
                 endGame();
                 return;
             }
 
-            // ЮРА съел сыр
-            if (newHead.x === cheese.x && newHead.y === cheese.y) {
-                cheese = randomPosition();
-                fishes.push(randomPosition()); // Добавляем новую корюшку 🐟
-                speed *= 0.95;
-                score++;
-                document.getElementById("score").innerText = "Счёт: " + score;
-                eatSound.play();
-            } else {
-                if (!firstMove) {
-                    snake.pop();
+            cheeses.forEach((cheese, index) => {
+                if (newHead.x === cheese.x && newHead.y === cheese.y) {
+                    cheeses.splice(index, 1);
+                    cheeses.push(randomPosition());
+                    fishes.push(randomPosition());
+                    speed *= 0.95;
+                    score++;
+                    document.getElementById("score").innerText = "Счёт: " + score;
+                    eatSound.play();
                 }
+            });
+
+            if (!firstMove) {
+                snake.pop();
             }
 
             firstMove = false;
@@ -182,13 +207,15 @@
             else if (key === "ArrowRight" && direction.x === 0) direction = { x: 20, y: 0 };
         }
 
-        function gameLoop() {
-            if (!gameOver) {
-                update();
-                draw();
-                setTimeout(gameLoop, speed);
-            }
-        }
+        document.getElementById("donateYura").addEventListener("click", () => {
+            let amount = Math.floor(Math.random() * 5) + 1;
+            for (let i = 0; i < amount; i++) cheeses.push(randomPosition());
+        });
+
+        document.getElementById("donateAndrey").addEventListener("click", () => {
+            let amount = Math.floor(Math.random() * 5) + 1;
+            for (let i = 0; i < amount; i++) fishes.push(randomPosition());
+        });
 
         document.getElementById("restartBtn").addEventListener("click", init);
         init();
