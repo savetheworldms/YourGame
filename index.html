@@ -40,7 +40,6 @@
             border-radius: 8px;
             margin: 8px;
             transition: 0.3s;
-            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
         }
         #restartBtn {
             background: lime;
@@ -86,7 +85,7 @@
         <button id="donateYura" class="game-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="game-btn">Отправить донат Андрею (🐟)</button>
     </div>
-    <p id="version">v3.1.7</p>
+    <p id="version">v3.2.0</p>
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score;
         const yuraPhrases = [
@@ -158,7 +157,12 @@
                 document.getElementById("score").innerText = "Счёт: " + score;
                 document.getElementById("yuraPhrase").innerText = yuraPhrases[Math.floor(Math.random() * yuraPhrases.length)];
                 cheeses = cheeses.filter(cheese => cheese.x !== newHead.x || cheese.y !== newHead.y);
+                cheeses.push(randomPosition());
                 snake.push({});
+            }
+
+            if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
+                return endGame();
             }
 
             snake.unshift(newHead);
