@@ -64,7 +64,7 @@
 
     <script>
         let canvas, ctx, snake, direction, cheese, fish, gameOver, speed, firstMove, score;
-        let eatSound = new Audio("https://www.fesliyanstudios.com/play-mp3/438"); // Звук поедания сыра
+        let eatSound = new Audio("https://www.fesliyanstudios.com/play-mp3/438");
 
         function init() {
             console.log("🟢 Инициализация игры...");
@@ -114,41 +114,16 @@
                 if (index === 0) ctx.fillStyle = "green"; // Голова выделена
             });
 
-            // Рисуем сыр 🧀 (жёлтый с дырками)
-            drawCheese(cheese.x, cheese.y);
+            // Рисуем сыр 🧀 (большой эмодзи)
+            drawEmoji(cheese.x, cheese.y, "🧀");
 
-            // Рисуем корюшку 🐟 (градиентная рыбка)
-            drawFish(fish.x, fish.y);
+            // Рисуем корюшку 🐟 (большой эмодзи)
+            drawEmoji(fish.x, fish.y, "🐟");
         }
 
-        function drawCheese(x, y) {
-            ctx.fillStyle = "#FFD700"; // Жёлтый
-            ctx.fillRect(x, y, 20, 20);
-            
-            // Дырки в сыре
-            ctx.fillStyle = "#E6B800";
-            ctx.beginPath();
-            ctx.arc(x + 5, y + 5, 3, 0, Math.PI * 2);
-            ctx.arc(x + 15, y + 8, 3, 0, Math.PI * 2);
-            ctx.arc(x + 10, y + 15, 4, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        function drawFish(x, y) {
-            let gradient = ctx.createLinearGradient(x, y, x + 20, y + 10);
-            gradient.addColorStop(0, "#C0C0C0"); // Серебристый
-            gradient.addColorStop(1, "#808080"); // Серый
-
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.ellipse(x + 10, y + 10, 10, 6, 0, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Глаз
-            ctx.fillStyle = "black";
-            ctx.beginPath();
-            ctx.arc(x + 14, y + 8, 2, 0, Math.PI * 2);
-            ctx.fill();
+        function drawEmoji(x, y, emoji) {
+            ctx.font = "20px Arial";
+            ctx.fillText(emoji, x, y + 15);
         }
 
         function update() {
@@ -156,16 +131,26 @@
 
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
+            // Проверка на столкновение с корюшкой (🐟)
+            if (newHead.x === fish.x && newHead.y === fish.y) {
+                console.log("❌ ЮРА съел корюшку и проиграл!");
+                endGame();
+                return;
+            }
+
+            // Проверка на выход за границы
             if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
                 endGame();
                 return;
             }
 
+            // Проверка на столкновение с самим собой
             if (snake.some((segment, index) => index !== 0 && segment.x === newHead.x && segment.y === newHead.y)) {
                 endGame();
                 return;
             }
 
+            // ЮРА съел сыр
             if (newHead.x === cheese.x && newHead.y === cheese.y) {
                 cheese = randomPosition();
                 fish = randomPosition();
