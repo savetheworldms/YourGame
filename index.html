@@ -8,14 +8,15 @@
         body {
             text-align: center;
             font-family: Arial, sans-serif;
-            background-color: #222;
-            color: white;
+            background-color: #1e1e1e;
+            color: #f1f1f1;
         }
         canvas {
             border: 2px solid white;
             background-color: black;
             display: block;
             margin: auto;
+            box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.2);
         }
         #gameOverScreen {
             display: none;
@@ -23,25 +24,37 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
+            box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.8);
         }
         #restartBtn {
             background: lime;
             color: black;
             border: none;
-            padding: 10px 20px;
-            font-size: 18px;
+            padding: 12px 24px;
+            font-size: 20px;
             cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0px 4px 10px rgba(0, 255, 0, 0.5);
+            transition: 0.2s;
+        }
+        #restartBtn:hover {
+            background: #32cd32;
+        }
+        #score {
+            font-size: 24px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <h1>ЮРА 🐛</h1>
     <p>Собирай сыр-косичку (🧀) и избегай корюшку (🐟)!</p>
+    <p id="score">Счёт: 0</p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
 
     <div id="gameOverScreen">
@@ -50,7 +63,8 @@
     </div>
 
     <script>
-        let canvas, ctx, snake, direction, cheese, fish, gameOver, speed;
+        let canvas, ctx, snake, direction, cheese, fish, gameOver, speed, firstMove, score;
+        let eatSound = new Audio("https://www.fesliyanstudios.com/play-mp3/438"); // Звук поедания сыра
 
         function init() {
             console.log("🟢 Инициализация игры...");
@@ -58,6 +72,8 @@
             ctx = canvas.getContext("2d");
 
             document.getElementById("gameOverScreen").style.display = "none";
+            document.getElementById("score").innerText = "Счёт: 0";
+            score = 0;
 
             do {
                 fish = randomPosition();
@@ -65,9 +81,10 @@
                 snake = [randomPosition()];
             } while (snake[0].x === fish.x && snake[0].y === fish.y);
 
-            direction = { x: 20, y: 0 }; // ЮРА сразу движется вправо
+            direction = { x: 20, y: 0 };
             gameOver = false;
             speed = 150;
+            firstMove = true;
 
             document.addEventListener("keydown", changeDirection);
 
@@ -90,10 +107,10 @@
 
             ctx.fillStyle = "lime";
             snake.forEach((segment, index) => {
-                ctx.fillRect(segment.x, segment.y, 20, 20);
-                if (index === 0) {
-                    ctx.fillStyle = "green";
-                }
+                ctx.beginPath();
+                ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
+                ctx.fill();
+                if (index === 0) ctx.fillStyle = "green"; // Голова зеленее
             });
 
             ctx.fillStyle = "yellow";
@@ -126,16 +143,16 @@
                 cheese = randomPosition();
                 fish = randomPosition();
                 speed *= 0.95; // Ускоряем игру
+                score++;
+                document.getElementById("score").innerText = "Счёт: " + score;
+                eatSound.play(); // Звук поедания сыра
             } else {
-                snake.pop(); // Теперь удаляется правильно
+                if (!firstMove) {
+                    snake.pop();
+                }
             }
 
-            if (newHead.x === fish.x && newHead.y === fish.y) {
-                console.log("❌ ЮРА наелся корюшки!");
-                endGame();
-                return;
-            }
-
+            firstMove = false;
             snake.unshift(newHead);
         }
 
@@ -157,7 +174,6 @@
             } else if (key === "ArrowRight" && direction.x === 0) {
                 direction = { x: 20, y: 0 };
             }
-            console.log(`➡️ Направление изменено: x=${direction.x}, y=${direction.y}`);
         }
 
         function gameLoop() {
@@ -169,7 +185,6 @@
         }
 
         document.getElementById("restartBtn").addEventListener("click", () => {
-            console.log("🔄 Перезапуск игры...");
             init();
         });
 
