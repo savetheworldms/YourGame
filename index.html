@@ -100,36 +100,50 @@
             "Я ещё не наелся, но уже хочу пилить кастдев на тему сыра! 📞💼"
         ];
 
-        function init(extraCheese = 0, extraFishes = 0) {
-            canvas = document.getElementById("gameCanvas");
-            ctx = canvas.getContext("2d");
+    function init(extraCheese = 0, extraFishes = 0) {
+    canvas = document.getElementById("gameCanvas");
+    ctx = canvas.getContext("2d");
 
-            snake = [{ x: 200, y: 200 }];
-            direction = { x: 20, y: 0 };
-            cheeses = Array.from({ length: 1 + extraCheese }, randomPosition);
-            fishes = Array.from({ length: 1 + extraFishes }, randomPosition);
-            score = 0;
-            gameOver = false;
+    snake = [{ x: 200, y: 200 }];
+    direction = { x: 20, y: 0 };
+    
+    // Гарантируем, что массивы существуют
+    cheeses = [];
+    fishes = [];
 
-            document.getElementById("score").innerText = "Счёт: 0";
-            document.getElementById("gameOverScreen").style.display = "none";
+    for (let i = 0; i < 1 + extraCheese; i++) {
+        cheeses.push(randomPosition());
+    }
 
-            document.addEventListener("keydown", changeDirection);
-            gameLoop();
-        }
+    for (let i = 0; i < 1 + extraFishes; i++) {
+        fishes.push(randomPosition());
+    }
 
-        function randomPosition() {
-            let position;
-            do {
-                position = {
-                    x: Math.floor(Math.random() * 20) * 20,
-                    y: Math.floor(Math.random() * 20) * 20
-                };
-            } while (cheeses.some(cheese => cheese.x === position.x && cheese.y === position.y) ||
-                     fishes.some(fish => fish.x === position.x && fish.y === position.y));
+    score = 0;
+    gameOver = false;
 
-            return position;
-        }
+    document.getElementById("score").innerText = "Счёт: 0";
+    document.getElementById("gameOverScreen").style.display = "none";
+
+    document.addEventListener("keydown", changeDirection);
+    gameLoop();
+}
+
+  function randomPosition() {
+    let position;
+    do {
+        position = {
+            x: Math.floor(Math.random() * 20) * 20,
+            y: Math.floor(Math.random() * 20) * 20
+        };
+    } while (
+        cheeses.some(cheese => cheese.x === position.x && cheese.y === position.y) ||
+        fishes.some(fish => fish.x === position.x && fish.y === position.y) ||
+        snake.some(segment => segment.x === position.x && segment.y === position.y)
+    );
+
+    return position;
+}
 
         function changeDirection(event) {
             const key = event.keyCode;
