@@ -50,7 +50,7 @@
     </div>
 
     <script>
-        let canvas, ctx, snake, direction, cheese, fish, gameOver;
+        let canvas, ctx, snake, direction, cheese, fish, gameOver, speed;
 
         function init() {
             console.log("🟢 Инициализация игры...");
@@ -65,13 +65,14 @@
                 snake = [randomPosition()];
             } while (snake[0].x === fish.x && snake[0].y === fish.y);
 
-            direction = { x: 0, y: 0 };
+            direction = { x: 20, y: 0 }; // ЮРА сразу движется вправо
             gameOver = false;
+            speed = 150;
 
             document.addEventListener("keydown", changeDirection);
 
             console.log("✅ Игра успешно инициализирована!");
-            requestAnimationFrame(gameLoop);
+            setTimeout(gameLoop, speed);
         }
 
         function randomPosition() {
@@ -105,7 +106,7 @@
         function update() {
             if (gameOver) return;
 
-            const newHead = { x: snake[0].x + direction.x * 20, y: snake[0].y + direction.y * 20 };
+            const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
             console.log(`🔄 ЮРА движется: x=${newHead.x}, y=${newHead.y}`);
 
             if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
@@ -114,7 +115,7 @@
                 return;
             }
 
-            if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
+            if (snake.some((segment, index) => index !== 0 && segment.x === newHead.x && segment.y === newHead.y)) {
                 console.log("❌ ЮРА врезался в себя!");
                 endGame();
                 return;
@@ -124,8 +125,9 @@
                 console.log("✅ ЮРА съел сыр!");
                 cheese = randomPosition();
                 fish = randomPosition();
+                speed *= 0.95; // Ускоряем игру
             } else {
-                snake.pop();
+                snake.pop(); // Теперь удаляется правильно
             }
 
             if (newHead.x === fish.x && newHead.y === fish.y) {
@@ -147,13 +149,13 @@
             if (gameOver) return;
             const key = event.key;
             if (key === "ArrowUp" && direction.y === 0) {
-                direction = { x: 0, y: -1 };
+                direction = { x: 0, y: -20 };
             } else if (key === "ArrowDown" && direction.y === 0) {
-                direction = { x: 0, y: 1 };
+                direction = { x: 0, y: 20 };
             } else if (key === "ArrowLeft" && direction.x === 0) {
-                direction = { x: -1, y: 0 };
+                direction = { x: -20, y: 0 };
             } else if (key === "ArrowRight" && direction.x === 0) {
-                direction = { x: 1, y: 0 };
+                direction = { x: 20, y: 0 };
             }
             console.log(`➡️ Направление изменено: x=${direction.x}, y=${direction.y}`);
         }
@@ -162,7 +164,7 @@
             if (!gameOver) {
                 update();
                 draw();
-                requestAnimationFrame(gameLoop);
+                setTimeout(gameLoop, speed);
             }
         }
 
