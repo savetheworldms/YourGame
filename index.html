@@ -32,6 +32,15 @@
             text-align: center;
             box-shadow: 0px 0px 20px rgba(255, 0, 0, 0.8);
         }
+        #restartBtn {
+            background: lime;
+            color: black;
+            padding: 12px 24px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.2s;
+        }
         .donate-btn {
             display: inline-block;
             margin: 10px;
@@ -45,33 +54,12 @@
         #donateYura {
             background: orange;
             color: white;
-            box-shadow: 0px 4px 10px rgba(255, 165, 0, 0.5);
-        }
-        #donateYura:hover {
-            background: darkorange;
         }
         #donateAndrey {
             background: blue;
             color: white;
-            box-shadow: 0px 4px 10px rgba(0, 0, 255, 0.5);
         }
-        #donateAndrey:hover {
-            background: darkblue;
-        }
-        #restartBtn {
-            background: lime;
-            color: black;
-            padding: 12px 24px;
-            font-size: 20px;
-            cursor: pointer;
-            border-radius: 5px;
-            box-shadow: 0px 4px 10px rgba(0, 255, 0, 0.5);
-            transition: 0.2s;
-        }
-        #restartBtn:hover {
-            background: #32cd32;
-        }
-        #score, #topScore, #yuraPhrase {
+        #score, #topScore {
             font-size: 24px;
             margin-top: 10px;
         }
@@ -82,13 +70,11 @@
     <p>Собирай сыр-косичку (🧀) и избегай корюшку (🐟)!</p>
     <p id="score">Текущий счёт: 0</p>
     <p id="topScore">Топ результат: 0</p>
-    <p id="yuraPhrase"></p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
 
     <div id="gameOverScreen">
         <h2>ЮРА наелся корюшки и проиграл! 🐟💀</h2>
         <button id="restartBtn">Начать заново</button>
-        <br><br>
         <button id="donateYura" class="donate-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="donate-btn">Отправить донат Андрею (🐟)</button>
     </div>
@@ -104,7 +90,6 @@
         }
 
         function init(extraCheese = 0, extraFish = 0) {
-            console.log("🟢 Инициализация игры...");
             canvas = document.getElementById("gameCanvas");
             ctx = canvas.getContext("2d");
 
@@ -112,7 +97,6 @@
             score = 0;
             document.getElementById("score").innerText = "Текущий счёт: 0";
             document.getElementById("topScore").innerText = "Топ результат: " + topScore;
-            document.getElementById("yuraPhrase").innerText = "";
 
             snake = [randomPosition()];
             cheeses = [randomPosition()];
@@ -203,6 +187,10 @@
             else if (key === "ArrowLeft" && direction.x === 0) direction = { x: -20, y: 0 };
             else if (key === "ArrowRight" && direction.x === 0) direction = { x: 20, y: 0 };
         }
+
+        document.getElementById("restartBtn").addEventListener("click", () => init());
+        document.getElementById("donateYura").addEventListener("click", () => init(Math.floor(Math.random() * 5) + 1, 0));
+        document.getElementById("donateAndrey").addEventListener("click", () => init(0, Math.floor(Math.random() * 5) + 1));
 
         init();
     </script>
