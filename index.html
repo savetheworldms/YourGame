@@ -73,7 +73,7 @@
 
         let yura = [{ x: 200, y: 200 }];
         let direction = { x: 20, y: 0 };
-        let cheese = randomPosition();
+        let cheese;
         let fish = [];
         let score = 0;
         let gameOver = false;
@@ -97,7 +97,7 @@
                     x: Math.floor(Math.random() * 20) * 20,
                     y: Math.floor(Math.random() * 20) * 20
                 };
-            } while (fish.some(f => f.x === pos.x && f.y === pos.y) || (cheese.x === pos.x && cheese.y === pos.y));
+            } while (fish.some(f => f.x === pos.x && f.y === pos.y) || (cheese && cheese.x === pos.x && cheese.y === pos.y));
             return pos;
         }
 
