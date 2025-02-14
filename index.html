@@ -86,7 +86,7 @@
 </head>
 <body>
     <h1>ЮРА 🐛</h1>
-    <p id="version">v2.0</p>
+    <p id="version">v2.1</p>
     <p>Собирай сыр-косичку (🧀) и избегай корюшку (🐟)!</p>
     <p id="score">Текущий счёт: 0</p>
     <p id="topScore">Топ результат: 0</p>
@@ -148,12 +148,12 @@
             gameLoop();
         }
 
-        function randomPosition() {
-            const gridSize = 20;
-            return {
-                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
-                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize
-            };
+        function gameLoop() {
+            if (!gameOver) {
+                update();
+                draw();
+                setTimeout(gameLoop, speed);
+            }
         }
 
         function changeDirection(event) {
