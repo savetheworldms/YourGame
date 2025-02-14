@@ -85,7 +85,7 @@
         <button id="donateYura" class="game-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="game-btn">Отправить донат Андрею (🐟)</button>
     </div>
-    <p id="version">v3.3.0</p>
+    <p id="version">v3.4.0</p>
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score;
         const yuraPhrases = [
@@ -156,8 +156,12 @@
                 score++;
                 document.getElementById("score").innerText = "Счёт: " + score;
                 document.getElementById("yuraPhrase").innerText = yuraPhrases[Math.floor(Math.random() * yuraPhrases.length)];
+                
                 cheeses = cheeses.filter(cheese => cheese.x !== newHead.x || cheese.y !== newHead.y);
-                cheeses.push(randomPosition());
+                cheeses.push(randomPosition()); 
+                
+                fishes.push(randomPosition()); // Добавление 1 новой корюшки при съедании сыра
+                
                 snake.push({});
             }
 
