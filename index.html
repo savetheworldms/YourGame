@@ -82,10 +82,14 @@
         <button id="donateYura" class="donate-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="donate-btn">Отправить донат Андрею (🐟)</button>
     </div>
-    <p id="version">v2.5.1</p>
+    <p id="version">v2.6</p>
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score, topScore = 0;
-        
+        const cheeseImg = new Image();
+        cheeseImg.src = "https://em-content.zobj.net/source/apple/354/cheese-wedge_1f9c0.png";
+        const fishImg = new Image();
+        fishImg.src = "https://em-content.zobj.net/source/apple/354/fish_1f41f.png";
+
         function randomPosition() {
             return {
                 x: Math.floor(Math.random() * 20) * 20,
@@ -140,6 +144,7 @@
                     document.getElementById("score").innerText = "Текущий счёт: " + score;
                     cheeses.splice(i, 1);
                     cheeses.push(randomPosition());
+                    snake.push({ x: -20, y: -20 }); // Увеличиваем длину змейки
                 }
             }
 
@@ -163,12 +168,10 @@
             snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 20, 20));
 
             // Рисуем сыр 🧀
-            ctx.fillStyle = "yellow";
-            cheeses.forEach(cheese => ctx.fillRect(cheese.x, cheese.y, 20, 20));
+            cheeses.forEach(cheese => ctx.drawImage(cheeseImg, cheese.x, cheese.y, 20, 20));
 
             // Рисуем корюшку 🐟
-            ctx.fillStyle = "red";
-            fishes.forEach(fish => ctx.fillRect(fish.x, fish.y, 20, 20));
+            fishes.forEach(fish => ctx.drawImage(fishImg, fish.x, fish.y, 20, 20));
         }
 
         function gameLoop() {
@@ -191,10 +194,6 @@
             else if (key === "ArrowLeft" && direction.x === 0) direction = { x: -20, y: 0 };
             else if (key === "ArrowRight" && direction.x === 0) direction = { x: 20, y: 0 };
         }
-
-        document.getElementById("restartBtn").addEventListener("click", () => init());
-        document.getElementById("donateYura").addEventListener("click", () => init(Math.floor(Math.random() * 5) + 1, 0));
-        document.getElementById("donateAndrey").addEventListener("click", () => init(0, Math.floor(Math.random() * 5) + 1));
 
         init();
     </script>
