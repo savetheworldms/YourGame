@@ -76,7 +76,7 @@
 </head>
 <body>
     <h1>ЮРА 🟣</h1>
-    <p>Собирай <span style="font-size: 1.5em;">🧀</span> и избегай <span style="font-size: 1.5em;">🐟</span>!</p>
+    <p>Собирай <span style="font-size: 2.5em;">🧀</span> и избегай <span style="font-size: 2.5em;">🐟</span>!</p>
     <p id="score">Счёт: 0</p>
     <p id="yuraPhrase"></p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -86,7 +86,7 @@
         <button id="donateYura" class="game-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="game-btn">Отправить донат Андрею (🐟)</button>
     </div>
-    <p id="version">v3.1.2</p>
+    <p id="version">v3.1.3</p>
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score;
 
@@ -133,8 +133,8 @@
                 ctx.fill();
             });
 
-            cheeses.forEach(cheese => ctx.fillText("🧀", cheese.x, cheese.y + 15));
-            fishes.forEach(fish => ctx.fillText("🐟", fish.x, fish.y + 15));
+            cheeses.forEach(cheese => ctx.fillText("🧀", cheese.x, cheese.y + 30));
+            fishes.forEach(fish => ctx.fillText("🐟", fish.x, fish.y + 30));
         }
 
         function update() {
