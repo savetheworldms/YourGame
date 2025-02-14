@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ЮРА 🟣</title>
+    <title>ЮРА 🌈</title>
     <style>
         body {
             text-align: center;
@@ -17,6 +17,7 @@
             background-color: black;
             display: block;
             margin: auto;
+            box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.2);
         }
         #gameOverScreen {
             display: none;
@@ -24,23 +25,34 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
+            box-shadow: 0px 0px 20px rgba(255, 0, 0, 0.8);
         }
         .game-btn {
             padding: 14px 28px;
             font-size: 18px;
-            cursor: pointer;
             border: none;
+            cursor: pointer;
             border-radius: 8px;
             margin: 8px;
+            transition: 0.3s;
         }
-        #restartBtn { background: lime; color: black; }
-        #donateYura { background: orange; color: white; }
-        #donateAndrey { background: blue; color: white; }
+        #restartBtn {
+            background: lime;
+            color: black;
+        }
+        #donateYura {
+            background: orange;
+            color: white;
+        }
+        #donateAndrey {
+            background: blue;
+            color: white;
+        }
         #score {
             font-size: 24px;
             margin-top: 10px;
@@ -48,31 +60,34 @@
         #yuraPhrase {
             font-size: 18px;
             margin-top: 10px;
-            font-weight: bold;
-            color: yellow;
+            font-style: italic;
+            color: #ffcc00;
+        }
+        #version {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 14px;
+            opacity: 0.7;
+            color: gray;
         }
     </style>
 </head>
 <body>
-    <h1>ЮРА 🟣</h1>
+    <h1>ЮРА 🌈</h1>
     <p>Собирай 🧀 и избегай 🐟!</p>
-    <p>Счёт: <span id="score">0</span></p>
+    <p id="score">Счёт: 0</p>
     <p id="yuraPhrase"></p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
-
     <div id="gameOverScreen">
         <h2>ЮРА наелся корюшки и проиграл! 🐟💀</h2>
         <button id="restartBtn" class="game-btn">Начать заново</button>
         <button id="donateYura" class="game-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="game-btn">Отправить донат Андрею (🐟)</button>
     </div>
-
+    <p id="version">v3.5.0</p>
     <script>
-        let canvas = document.getElementById("gameCanvas");
-        let ctx = canvas.getContext("2d");
-
-        let yura, direction, cheese, fish, score, gameOver;
-        
+        let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score;
         const yuraPhrases = [
             "Этот сыр залетел лучше, чем лид с LTV 10k$! 🧀💰",
             "О БОЖЕ, КАК ЖЕ ЭТО ВКУСНО… 🤩 ДАВАЙТЕ УВОЛИМСЯ И ЖИТЬ НА ДОХОД ОТ СЫРА!",
@@ -85,62 +100,83 @@
             "Я ещё не наелся, но уже хочу пилить кастдев на тему сыра! 📞💼"
         ];
 
-function randomPosition() {
-    let pos;
-    do {
-        pos = {
-            x: Math.floor(Math.random() * 20) * 20,
-            y: Math.floor(Math.random() * 20) * 20
-        };
-    } while (Array.isArray(fish) && fish.some(f => f.x === pos.x && f.y === pos.y) || (cheese && cheese.x === pos.x && cheese.y === pos.y));
-    return pos;
-}
+        function init(extraCheese = 0, extraFishes = 0) {
+            canvas = document.getElementById("gameCanvas");
+            ctx = canvas.getContext("2d");
 
-     function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Цвета ЛГБТ-флага
-    const rainbowColors = ["#E40303", "#FF8C00", "#FFED00", "#008026", "#004DFF", "#750787"];
+            snake = [{ x: 200, y: 200 }];
+            direction = { x: 20, y: 0 };
+            cheeses = Array.from({ length: 1 + extraCheese }, randomPosition);
+            fishes = Array.from({ length: 1 + extraFishes }, randomPosition);
+            score = 0;
+            gameOver = false;
 
-    snake.forEach((segment, index) => {
-        const gradient = ctx.createLinearGradient(segment.x, segment.y, segment.x + 20, segment.y + 20);
-        gradient.addColorStop(0, rainbowColors[index % rainbowColors.length]);
-        gradient.addColorStop(1, rainbowColors[(index + 1) % rainbowColors.length]);
+            document.getElementById("score").innerText = "Счёт: 0";
+            document.getElementById("gameOverScreen").style.display = "none";
 
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
-        ctx.fill();
-    });
+            document.addEventListener("keydown", changeDirection);
+            gameLoop();
+        }
 
-    ctx.font = "20px Arial";
-    cheeses.forEach(cheese => ctx.fillText("🧀", cheese.x, cheese.y + 20));
-    fishes.forEach(fish => ctx.fillText("🐟", fish.x, fish.y + 20));
-}
+        function randomPosition() {
+            let position;
+            do {
+                position = {
+                    x: Math.floor(Math.random() * 20) * 20,
+                    y: Math.floor(Math.random() * 20) * 20
+                };
+            } while (cheeses.some(cheese => cheese.x === position.x && cheese.y === position.y) ||
+                     fishes.some(fish => fish.x === position.x && fish.y === position.y));
+
+            return position;
+        }
+
+        function changeDirection(event) {
+            const key = event.keyCode;
+            if (key === 37 && direction.x === 0) direction = { x: -20, y: 0 };
+            else if (key === 38 && direction.y === 0) direction = { x: 0, y: -20 };
+            else if (key === 39 && direction.x === 0) direction = { x: 20, y: 0 };
+            else if (key === 40 && direction.y === 0) direction = { x: 0, y: 20 };
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const rainbowColors = ["#E40303", "#FF8C00", "#FFED00", "#008026", "#004DFF", "#750787"];
+
+            snake.forEach((segment, index) => {
+                const color = rainbowColors[index % rainbowColors.length];
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.font = "20px Arial";
+            cheeses.forEach(cheese => ctx.fillText("🧀", cheese.x, cheese.y + 20));
+            fishes.forEach(fish => ctx.fillText("🐟", fish.x, fish.y + 20));
+        }
 
         function update() {
-            let newHead = { x: yura[0].x + direction.x, y: yura[0].y + direction.y };
+            let newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
-            if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
-                return endGame();
-            }
-
-            if (fish.some(f => f.x === newHead.x && f.y === newHead.y)) {
-                return endGame();
-            }
-
-            if (newHead.x === cheese.x && newHead.y === cheese.y) {
+            if (cheeses.some(cheese => cheese.x === newHead.x && cheese.y === newHead.y)) {
                 score++;
-                document.getElementById("score").innerText = score;
+                document.getElementById("score").innerText = "Счёт: " + score;
                 document.getElementById("yuraPhrase").innerText = yuraPhrases[Math.floor(Math.random() * yuraPhrases.length)];
-                
-                cheese = randomPosition();
-                fish.push(randomPosition());
-            } else {
-                yura.pop(); // Теперь хвост удаляется только если Юра не ел сыр
+
+                cheeses.push(randomPosition());
+                fishes.push(randomPosition());
+
+                snake.push({});
             }
 
-            yura.unshift(newHead);
+            if (fishes.some(fish => fish.x === newHead.x && fish.y === newHead.y) ||
+                newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
+                return endGame();
+            }
+
+            snake.unshift(newHead);
+            snake.pop();
         }
 
         function gameLoop() {
@@ -156,31 +192,11 @@ function randomPosition() {
             document.getElementById("gameOverScreen").style.display = "block";
         }
 
-        function resetGame(extraCheese = 0, extraFish = 0) {
-            yura = [{ x: 200, y: 200 }];
-            direction = { x: 20, y: 0 };
-            cheese = randomPosition();
-            fish = Array(extraFish).fill().map(() => randomPosition());
-            score = 0;
-            gameOver = false;
-            document.getElementById("score").innerText = score;
-            document.getElementById("yuraPhrase").innerText = "";
-            document.getElementById("gameOverScreen").style.display = "none";
-            gameLoop();
-        }
+        document.getElementById("restartBtn").addEventListener("click", () => init());
+        document.getElementById("donateYura").addEventListener("click", () => init(1, 0));
+        document.getElementById("donateAndrey").addEventListener("click", () => init(0, 1));
 
-        document.addEventListener("keydown", e => {
-            if (e.key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -20 };
-            if (e.key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: 20 };
-            if (e.key === "ArrowLeft" && direction.x === 0) direction = { x: -20, y: 0 };
-            if (e.key === "ArrowRight" && direction.x === 0) direction = { x: 20, y: 0 };
-        });
-
-        document.getElementById("restartBtn").addEventListener("click", () => resetGame());
-        document.getElementById("donateYura").addEventListener("click", () => resetGame(Math.floor(Math.random() * 5) + 1));
-        document.getElementById("donateAndrey").addEventListener("click", () => resetGame(0, Math.floor(Math.random() * 5) + 1));
-
-        resetGame();
+        init();
     </script>
 </body>
 </html>
