@@ -58,10 +58,13 @@
 
             document.getElementById("gameOverScreen").style.display = "none";
 
-            cheese = randomPosition(); 
-            fish = randomPosition(); 
+            // Генерируем корюшку и сыр
+            fish = randomPosition();
+            cheese = randomPosition();
 
+            // ЮРА спавнится в безопасном месте (не на сыре и не на корюшке)
             snake = [getSafePosition()];
+
             direction = { x: 0, y: 0 };
             gameOver = false;
 
@@ -81,7 +84,7 @@
             let pos;
             do {
                 pos = randomPosition();
-            } while (fish && pos.x === fish.x && pos.y === fish.y);
+            } while ((pos.x === fish.x && pos.y === fish.y) || (pos.x === cheese.x && pos.y === cheese.y));
             return pos;
         }
 
