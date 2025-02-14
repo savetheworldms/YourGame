@@ -85,7 +85,7 @@
         <button id="donateYura" class="game-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="game-btn">Отправить донат Андрею (🐟)</button>
     </div>
-    <p id="version">v2.8.1</p>
+    <p id="version">v2.8.2</p>
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score;
         const cheeseImg = new Image();
@@ -111,6 +111,14 @@
                 x: Math.floor(Math.random() * 20) * 20,
                 y: Math.floor(Math.random() * 20) * 20
             };
+        }
+
+        function changeDirection(event) {
+            const key = event.keyCode;
+            if (key === 37 && direction.x === 0) direction = { x: -20, y: 0 };
+            else if (key === 38 && direction.y === 0) direction = { x: 0, y: -20 };
+            else if (key === 39 && direction.x === 0) direction = { x: 20, y: 0 };
+            else if (key === 40 && direction.y === 0) direction = { x: 0, y: 20 };
         }
 
         function init(extraCheese = 0, extraFish = 0) {
@@ -176,20 +184,6 @@
             snake.pop();
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "purple";
-
-            snake.forEach(segment => {
-                ctx.beginPath();
-                ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
-                ctx.fill();
-            });
-
-            cheeses.forEach(cheese => ctx.drawImage(cheeseImg, cheese.x, cheese.y, 20, 20));
-            fishes.forEach(fish => ctx.drawImage(fishImg, fish.x, fish.y, 20, 20));
-        }
-
         function gameLoop() {
             if (!gameOver) {
                 update();
@@ -203,7 +197,6 @@
             document.getElementById("gameOverScreen").style.display = "block";
         }
 
-        document.addEventListener("keydown", changeDirection);
         document.getElementById("restartBtn").addEventListener("click", () => init());
         document.getElementById("donateYura").addEventListener("click", () => init(Math.floor(Math.random() * 5) + 1, 0));
         document.getElementById("donateAndrey").addEventListener("click", () => init(0, Math.floor(Math.random() * 5) + 1));
