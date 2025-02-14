@@ -39,7 +39,6 @@
             font-size: 20px;
             cursor: pointer;
             border-radius: 5px;
-            transition: 0.2s;
         }
         .donate-btn {
             display: inline-block;
@@ -49,7 +48,6 @@
             border: none;
             cursor: pointer;
             border-radius: 5px;
-            transition: 0.2s;
         }
         #donateYura {
             background: orange;
@@ -63,22 +61,28 @@
             font-size: 24px;
             margin-top: 10px;
         }
+        #version {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
     <h1>ЮРА 🐛</h1>
-    <p>Собирай сыр-косичку (🧀) и избегай корюшку (🐟)!</p>
+    <p>Собирай <span style="font-size: 1.5em;">🧀</span> и избегай <span style="font-size: 1.5em;">🐟</span>!</p>
     <p id="score">Текущий счёт: 0</p>
     <p id="topScore">Топ результат: 0</p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
-
     <div id="gameOverScreen">
         <h2>ЮРА наелся корюшки и проиграл! 🐟💀</h2>
         <button id="restartBtn">Начать заново</button>
         <button id="donateYura" class="donate-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="donate-btn">Отправить донат Андрею (🐟)</button>
     </div>
-
+    <p id="version">v2.5.1</p>
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score, topScore = 0;
         
