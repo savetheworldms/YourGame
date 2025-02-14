@@ -86,18 +86,18 @@
         <button id="donateYura" class="game-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="game-btn">Отправить донат Андрею (🐟)</button>
     </div>
-    <p id="version">v3.1.1</p>
+    <p id="version">v3.1.2</p>
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score;
 
-        function init() {
+        function init(extraCheese = 0, extraFishes = 0) {
             canvas = document.getElementById("gameCanvas");
             ctx = canvas.getContext("2d");
 
             snake = [{ x: 200, y: 200 }];
             direction = { x: 20, y: 0 };
-            cheeses = [randomPosition()];
-            fishes = [randomPosition()];
+            cheeses = Array.from({ length: 1 + extraCheese }, randomPosition);
+            fishes = Array.from({ length: 1 + extraFishes }, randomPosition);
             score = 0;
             gameOver = false;
 
@@ -176,9 +176,15 @@
             }
         }
 
-        document.getElementById("restartBtn").addEventListener("click", init);
-        document.getElementById("donateYura").addEventListener("click", () => { cheeses.push(randomPosition()); init(); });
-        document.getElementById("donateAndrey").addEventListener("click", () => { fishes.push(randomPosition()); init(); });
+        document.getElementById("restartBtn").addEventListener("click", () => init());
+        document.getElementById("donateYura").addEventListener("click", () => {
+            let extraCheese = Math.floor(Math.random() * 5) + 1;
+            init(extraCheese, 0);
+        });
+        document.getElementById("donateAndrey").addEventListener("click", () => {
+            let extraFishes = Math.floor(Math.random() * 5) + 1;
+            init(0, extraFishes);
+        });
 
         init();
     </script>
