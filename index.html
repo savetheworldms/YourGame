@@ -96,20 +96,27 @@ function randomPosition() {
     return pos;
 }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+     function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Цвета ЛГБТ-флага
+    const rainbowColors = ["#E40303", "#FF8C00", "#FFED00", "#008026", "#004DFF", "#750787"];
 
-            ctx.fillStyle = "purple";
-            yura.forEach(segment => {
-                ctx.beginPath();
-                ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
-                ctx.fill();
-            });
+    snake.forEach((segment, index) => {
+        const gradient = ctx.createLinearGradient(segment.x, segment.y, segment.x + 20, segment.y + 20);
+        gradient.addColorStop(0, rainbowColors[index % rainbowColors.length]);
+        gradient.addColorStop(1, rainbowColors[(index + 1) % rainbowColors.length]);
 
-            ctx.font = "20px Arial";
-            ctx.fillText("🧀", cheese.x, cheese.y + 20);
-            fish.forEach(f => ctx.fillText("🐟", f.x, f.y + 20));
-        }
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.font = "20px Arial";
+    cheeses.forEach(cheese => ctx.fillText("🧀", cheese.x, cheese.y + 20));
+    fishes.forEach(fish => ctx.fillText("🐟", fish.x, fish.y + 20));
+}
 
         function update() {
             let newHead = { x: yura[0].x + direction.x, y: yura[0].y + direction.y };
