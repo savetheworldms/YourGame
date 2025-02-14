@@ -71,13 +71,8 @@
         let canvas = document.getElementById("gameCanvas");
         let ctx = canvas.getContext("2d");
 
-        let yura = [{ x: 200, y: 200 }];
-        let direction = { x: 20, y: 0 };
-        let cheese;
-        let fish = [];
-        let score = 0;
-        let gameOver = false;
-
+        let yura, direction, cheese, fish, score, gameOver;
+        
         const yuraPhrases = [
             "Этот сыр залетел лучше, чем лид с LTV 10k$! 🧀💰",
             "О БОЖЕ, КАК ЖЕ ЭТО ВКУСНО… 🤩 ДАВАЙТЕ УВОЛИМСЯ И ЖИТЬ НА ДОХОД ОТ СЫРА!",
@@ -134,9 +129,8 @@
                 
                 cheese = randomPosition();
                 fish.push(randomPosition());
-                yura.push({});
             } else {
-                yura.pop();
+                yura.pop(); // Теперь хвост удаляется только если Юра не ел сыр
             }
 
             yura.unshift(newHead);
