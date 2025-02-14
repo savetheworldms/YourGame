@@ -75,18 +75,10 @@
             font-size: 24px;
             margin-top: 10px;
         }
-        #version {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 14px;
-            color: #aaa;
-        }
     </style>
 </head>
 <body>
     <h1>ЮРА 🐛</h1>
-    <p id="version">v2.2</p>
     <p>Собирай сыр-косичку (🧀) и избегай корюшку (🐟)!</p>
     <p id="score">Текущий счёт: 0</p>
     <p id="topScore">Топ результат: 0</p>
@@ -102,9 +94,9 @@
     </div>
 
     <script>
-        let canvas, ctx, snake, direction, cheeses, fishes, gameOver, speed, firstMove, score;
+        let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score;
         let topScore = localStorage.getItem("topScore") || 0;
-
+        
         const yuraPhrases = [
             "БЛЯ, КАК ЖЕ ЭТО ВКУСНО… 🤤 ЮРА ЛЮБИТ ВСЕХ!",
             "Так, где мой второй монитор? Буду есть сыр и кодить одновременно! 💻🧀",
@@ -119,10 +111,9 @@
         ];
 
         function randomPosition() {
-            const gridSize = 20;
             return {
-                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
-                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize
+                x: Math.floor(Math.random() * 20) * 20,
+                y: Math.floor(Math.random() * 20) * 20
             };
         }
 
@@ -132,26 +123,22 @@
             ctx = canvas.getContext("2d");
 
             document.getElementById("gameOverScreen").style.display = "none";
+            score = 0;
             document.getElementById("score").innerText = "Текущий счёт: 0";
             document.getElementById("topScore").innerText = "Топ результат: " + topScore;
             document.getElementById("yuraPhrase").innerText = "";
-            score = 0;
 
+            snake = [randomPosition()];
             cheeses = [randomPosition()];
             fishes = [randomPosition()];
-            snake = [randomPosition()];
 
             for (let i = 0; i < extraCheese; i++) cheeses.push(randomPosition());
             for (let i = 0; i < extraFish; i++) fishes.push(randomPosition());
 
             direction = { x: 20, y: 0 };
             gameOver = false;
-            speed = 150;
-            firstMove = true;
 
             document.addEventListener("keydown", changeDirection);
-
-            console.log("✅ Игра успешно инициализирована!");
             gameLoop();
         }
 
@@ -159,7 +146,7 @@
             if (!gameOver) {
                 update();
                 draw();
-                setTimeout(gameLoop, speed);
+                setTimeout(gameLoop, 150);
             }
         }
 
