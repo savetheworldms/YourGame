@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ЮРА 🐛</title>
+    <title>ЮРА 🟣</title>
     <style>
         body {
             text-align: center;
@@ -58,6 +58,12 @@
             font-size: 24px;
             margin-top: 10px;
         }
+        #yuraPhrase {
+            font-size: 18px;
+            margin-top: 10px;
+            font-style: italic;
+            color: #ffcc00;
+        }
         #version {
             position: absolute;
             top: 10px;
@@ -68,9 +74,10 @@
     </style>
 </head>
 <body>
-    <h1>ЮРА 🐛</h1>
+    <h1>ЮРА 🟣</h1>
     <p>Собирай <span style="font-size: 1.5em;">🧀</span> и избегай <span style="font-size: 1.5em;">🐟</span>!</p>
     <p id="score">Счёт: 0</p>
+    <p id="yuraPhrase"></p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
     <div id="gameOverScreen">
         <h2>ЮРА наелся корюшки и проиграл! 🐟💀</h2>
@@ -78,15 +85,26 @@
         <button id="donateYura" class="game-btn">Отправить донат Юре (🧀)</button>
         <button id="donateAndrey" class="game-btn">Отправить донат Андрею (🐟)</button>
     </div>
-    <p id="version">v2.7</p>
+    <p id="version">v2.8</p>
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score;
         const cheeseImg = new Image();
         cheeseImg.src = "https://em-content.zobj.net/source/apple/354/cheese-wedge_1f9c0.png";
         const fishImg = new Image();
         fishImg.src = "https://em-content.zobj.net/source/apple/354/fish_1f41f.png";
-        const yuraImg = new Image();
-        yuraImg.src = "https://em-content.zobj.net/source/apple/354/bug_1f41b.png"; // Стильный ЮРА 🐛
+        
+        const yuraPhrases = [
+            "Ммм, сырочек! 🤤", 
+            "Вкуснотища! 😋", 
+            "Сырный кайф! 🧀🔥", 
+            "ЮРА доволен! 😍", 
+            "Еще давай! 🤩", 
+            "Лучшая жизнь — это сырная жизнь! 🧀💛", 
+            "Сырный бог благословил ЮРУ! 🙏", 
+            "О да, это оно! 🥰", 
+            "Сырный экстаз! 🎉", 
+            "Вот это улов! 🎯"
+        ];
 
         function randomPosition() {
             return {
@@ -103,6 +121,7 @@
 
             score = 0;
             document.getElementById("score").innerText = "Счёт: 0";
+            document.getElementById("yuraPhrase").innerText = "";
 
             snake = [randomPosition()];
             cheeses = [randomPosition()];
@@ -139,6 +158,7 @@
                 if (cheeses[i].x === newHead.x && cheeses[i].y === newHead.y) {
                     score++;
                     document.getElementById("score").innerText = "Счёт: " + score;
+                    document.getElementById("yuraPhrase").innerText = yuraPhrases[Math.floor(Math.random() * yuraPhrases.length)];
                     cheeses.splice(i, 1);
                     cheeses.push(randomPosition());
                     snake.push({ x: -20, y: -20 });
@@ -158,11 +178,12 @@
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "purple";
 
-            snake.forEach((segment, index) => {
-                ctx.drawImage(yuraImg, segment.x, segment.y, 20, 20);
-                ctx.shadowColor = "lime";
-                ctx.shadowBlur = 8;
+            snake.forEach(segment => {
+                ctx.beginPath();
+                ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
+                ctx.fill();
             });
 
             cheeses.forEach(cheese => ctx.drawImage(cheeseImg, cheese.x, cheese.y, 20, 20));
@@ -180,14 +201,6 @@
         function endGame() {
             gameOver = true;
             document.getElementById("gameOverScreen").style.display = "block";
-        }
-
-        function changeDirection(event) {
-            const key = event.key;
-            if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -20 };
-            else if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: 20 };
-            else if (key === "ArrowLeft" && direction.x === 0) direction = { x: -20, y: 0 };
-            else if (key === "ArrowRight" && direction.x === 0) direction = { x: 20, y: 0 };
         }
 
         document.getElementById("restartBtn").addEventListener("click", () => init());
