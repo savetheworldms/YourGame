@@ -86,7 +86,7 @@
 </head>
 <body>
     <h1>ЮРА 🐛</h1>
-    <p id="version">v2.1</p>
+    <p id="version">v2.2</p>
     <p>Собирай сыр-косичку (🧀) и избегай корюшку (🐟)!</p>
     <p id="score">Текущий счёт: 0</p>
     <p id="topScore">Топ результат: 0</p>
@@ -103,7 +103,6 @@
 
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, speed, firstMove, score;
-        let eatSound = new Audio("https://www.fesliyanstudios.com/play-mp3/438");
         let topScore = localStorage.getItem("topScore") || 0;
 
         const yuraPhrases = [
@@ -118,6 +117,14 @@
             "Это оно… это истинное предназначение… ЕЩЁ! 🧀",
             "Новый сырный рекорд! Вызываем фуллстек-конференцию! 📢"
         ];
+
+        function randomPosition() {
+            const gridSize = 20;
+            return {
+                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
+                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize
+            };
+        }
 
         function init(extraCheese = 0, extraFish = 0) {
             console.log("🟢 Инициализация игры...");
@@ -163,16 +170,6 @@
             else if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: 20 };
             else if (key === "ArrowLeft" && direction.x === 0) direction = { x: -20, y: 0 };
             else if (key === "ArrowRight" && direction.x === 0) direction = { x: 20, y: 0 };
-        }
-
-        function endGame() {
-            gameOver = true;
-            if (score > topScore) {
-                topScore = score;
-                localStorage.setItem("topScore", topScore);
-                document.getElementById("topScore").innerText = "Топ результат: " + topScore;
-            }
-            document.getElementById("gameOverScreen").style.display = "block";
         }
 
         document.getElementById("restartBtn").addEventListener("click", () => init());
