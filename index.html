@@ -105,47 +105,74 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // Рисуем ЮРУ (змейка)
             ctx.fillStyle = "lime";
             snake.forEach((segment, index) => {
                 ctx.beginPath();
                 ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
                 ctx.fill();
-                if (index === 0) ctx.fillStyle = "green"; // Голова зеленее
+                if (index === 0) ctx.fillStyle = "green"; // Голова выделена
             });
 
-            ctx.fillStyle = "yellow";
-            ctx.fillRect(cheese.x, cheese.y, 20, 20);
+            // Рисуем сыр 🧀 (жёлтый с дырками)
+            drawCheese(cheese.x, cheese.y);
 
-            ctx.fillStyle = "red";
-            ctx.fillRect(fish.x, fish.y, 20, 20);
+            // Рисуем корюшку 🐟 (градиентная рыбка)
+            drawFish(fish.x, fish.y);
+        }
+
+        function drawCheese(x, y) {
+            ctx.fillStyle = "#FFD700"; // Жёлтый
+            ctx.fillRect(x, y, 20, 20);
+            
+            // Дырки в сыре
+            ctx.fillStyle = "#E6B800";
+            ctx.beginPath();
+            ctx.arc(x + 5, y + 5, 3, 0, Math.PI * 2);
+            ctx.arc(x + 15, y + 8, 3, 0, Math.PI * 2);
+            ctx.arc(x + 10, y + 15, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawFish(x, y) {
+            let gradient = ctx.createLinearGradient(x, y, x + 20, y + 10);
+            gradient.addColorStop(0, "#C0C0C0"); // Серебристый
+            gradient.addColorStop(1, "#808080"); // Серый
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.ellipse(x + 10, y + 10, 10, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Глаз
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.arc(x + 14, y + 8, 2, 0, Math.PI * 2);
+            ctx.fill();
         }
 
         function update() {
             if (gameOver) return;
 
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-            console.log(`🔄 ЮРА движется: x=${newHead.x}, y=${newHead.y}`);
 
             if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
-                console.log("❌ ЮРА врезался в стену!");
                 endGame();
                 return;
             }
 
             if (snake.some((segment, index) => index !== 0 && segment.x === newHead.x && segment.y === newHead.y)) {
-                console.log("❌ ЮРА врезался в себя!");
                 endGame();
                 return;
             }
 
             if (newHead.x === cheese.x && newHead.y === cheese.y) {
-                console.log("✅ ЮРА съел сыр!");
                 cheese = randomPosition();
                 fish = randomPosition();
-                speed *= 0.95; // Ускоряем игру
+                speed *= 0.95;
                 score++;
                 document.getElementById("score").innerText = "Счёт: " + score;
-                eatSound.play(); // Звук поедания сыра
+                eatSound.play();
             } else {
                 if (!firstMove) {
                     snake.pop();
@@ -159,21 +186,15 @@
         function endGame() {
             gameOver = true;
             document.getElementById("gameOverScreen").style.display = "block";
-            console.log("💀 Игра окончена!");
         }
 
         function changeDirection(event) {
             if (gameOver) return;
             const key = event.key;
-            if (key === "ArrowUp" && direction.y === 0) {
-                direction = { x: 0, y: -20 };
-            } else if (key === "ArrowDown" && direction.y === 0) {
-                direction = { x: 0, y: 20 };
-            } else if (key === "ArrowLeft" && direction.x === 0) {
-                direction = { x: -20, y: 0 };
-            } else if (key === "ArrowRight" && direction.x === 0) {
-                direction = { x: 20, y: 0 };
-            }
+            if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -20 };
+            else if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: 20 };
+            else if (key === "ArrowLeft" && direction.x === 0) direction = { x: -20, y: 0 };
+            else if (key === "ArrowRight" && direction.x === 0) direction = { x: 20, y: 0 };
         }
 
         function gameLoop() {
@@ -184,10 +205,7 @@
             }
         }
 
-        document.getElementById("restartBtn").addEventListener("click", () => {
-            init();
-        });
-
+        document.getElementById("restartBtn").addEventListener("click", init);
         init();
     </script>
 </body>
