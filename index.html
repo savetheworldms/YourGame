@@ -86,7 +86,7 @@
 </head>
 <body>
     <h1>ЮРА 🐛</h1>
-    <p id="version">v1.4</p>
+    <p id="version">v1.5</p>
     <p>Собирай сыр-косичку (🧀) и избегай корюшку (🐟)!</p>
     <p id="score">Счёт: 0</p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -181,6 +181,7 @@
                     cheeses.splice(index, 1);
                     cheeses.push(randomPosition());
                     fishes.push(randomPosition());
+                    snake.push({ ...snake[snake.length - 1] }); // ЮРА растёт
                     speed *= 0.95;
                     score++;
                     document.getElementById("score").innerText = "Счёт: " + score;
@@ -219,13 +220,11 @@
         }
 
         document.getElementById("donateYura").addEventListener("click", () => {
-            if (!gameOver) return;
             let amount = Math.floor(Math.random() * 5) + 1;
             for (let i = 0; i < amount; i++) cheeses.push(randomPosition());
         });
 
         document.getElementById("donateAndrey").addEventListener("click", () => {
-            if (!gameOver) return;
             let amount = Math.floor(Math.random() * 5) + 1;
             for (let i = 0; i < amount; i++) fishes.push(randomPosition());
         });
