@@ -30,7 +30,7 @@
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.8);
+            box-shadow: 0px 0px 20px rgba(255, 0, 0, 0.8);
         }
         .donate-btn {
             display: inline-block;
@@ -41,11 +41,11 @@
             cursor: pointer;
             border-radius: 5px;
             transition: 0.2s;
-            box-shadow: 0px 4px 10px rgba(0, 255, 255, 0.5);
         }
         #donateYura {
             background: orange;
             color: white;
+            box-shadow: 0px 4px 10px rgba(255, 165, 0, 0.5);
         }
         #donateYura:hover {
             background: darkorange;
@@ -53,6 +53,7 @@
         #donateAndrey {
             background: blue;
             color: white;
+            box-shadow: 0px 4px 10px rgba(0, 0, 255, 0.5);
         }
         #donateAndrey:hover {
             background: darkblue;
@@ -85,7 +86,7 @@
 </head>
 <body>
     <h1>ЮРА 🐛</h1>
-    <p id="version">v1.2</p>
+    <p id="version">v1.3</p>
     <p>Собирай сыр-косичку (🧀) и избегай корюшку (🐟)!</p>
     <p id="score">Счёт: 0</p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -141,7 +142,6 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Рисуем ЮРУ (змейка)
             ctx.fillStyle = "lime";
             snake.forEach((segment, index) => {
                 ctx.beginPath();
@@ -150,10 +150,7 @@
                 if (index === 0) ctx.fillStyle = "green";
             });
 
-            // Рисуем сыры 🧀
             cheeses.forEach(cheese => drawEmoji(cheese.x, cheese.y, "🧀"));
-
-            // Рисуем всех корюшек 🐟
             fishes.forEach(fish => drawEmoji(fish.x, fish.y, "🐟"));
         }
 
