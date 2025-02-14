@@ -8,7 +8,7 @@
         body {
             text-align: center;
             font-family: Arial, sans-serif;
-            background-color: #1e1e1e;
+            background-color: #121212;
             color: #f1f1f1;
             position: relative;
         }
@@ -32,22 +32,19 @@
             text-align: center;
             box-shadow: 0px 0px 20px rgba(255, 0, 0, 0.8);
         }
-        #restartBtn {
-            background: lime;
-            color: black;
-            padding: 12px 24px;
-            font-size: 20px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .donate-btn {
-            display: inline-block;
-            margin: 10px;
-            padding: 12px 24px;
+        .game-btn {
+            padding: 14px 28px;
             font-size: 18px;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 8px;
+            margin: 8px;
+            transition: 0.3s;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+        }
+        #restartBtn {
+            background: lime;
+            color: black;
         }
         #donateYura {
             background: orange;
@@ -57,7 +54,7 @@
             background: blue;
             color: white;
         }
-        #score, #topScore {
+        #score {
             font-size: 24px;
             margin-top: 10px;
         }
@@ -73,22 +70,23 @@
 <body>
     <h1>ЮРА 🐛</h1>
     <p>Собирай <span style="font-size: 1.5em;">🧀</span> и избегай <span style="font-size: 1.5em;">🐟</span>!</p>
-    <p id="score">Текущий счёт: 0</p>
-    <p id="topScore">Топ результат: 0</p>
+    <p id="score">Счёт: 0</p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
     <div id="gameOverScreen">
         <h2>ЮРА наелся корюшки и проиграл! 🐟💀</h2>
-        <button id="restartBtn">Начать заново</button>
-        <button id="donateYura" class="donate-btn">Отправить донат Юре (🧀)</button>
-        <button id="donateAndrey" class="donate-btn">Отправить донат Андрею (🐟)</button>
+        <button id="restartBtn" class="game-btn">Начать заново</button>
+        <button id="donateYura" class="game-btn">Отправить донат Юре (🧀)</button>
+        <button id="donateAndrey" class="game-btn">Отправить донат Андрею (🐟)</button>
     </div>
-    <p id="version">v2.6.1</p>
+    <p id="version">v2.7</p>
     <script>
-        let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score, topScore = 0;
+        let canvas, ctx, snake, direction, cheeses, fishes, gameOver, score;
         const cheeseImg = new Image();
         cheeseImg.src = "https://em-content.zobj.net/source/apple/354/cheese-wedge_1f9c0.png";
         const fishImg = new Image();
         fishImg.src = "https://em-content.zobj.net/source/apple/354/fish_1f41f.png";
+        const yuraImg = new Image();
+        yuraImg.src = "https://em-content.zobj.net/source/apple/354/bug_1f41b.png"; // Стильный ЮРА 🐛
 
         function randomPosition() {
             return {
@@ -104,8 +102,7 @@
             ctx = canvas.getContext("2d");
 
             score = 0;
-            document.getElementById("score").innerText = "Текущий счёт: 0";
-            document.getElementById("topScore").innerText = "Топ результат: " + topScore;
+            document.getElementById("score").innerText = "Счёт: 0";
 
             snake = [randomPosition()];
             cheeses = [randomPosition()];
@@ -141,7 +138,7 @@
             for (let i = 0; i < cheeses.length; i++) {
                 if (cheeses[i].x === newHead.x && cheeses[i].y === newHead.y) {
                     score++;
-                    document.getElementById("score").innerText = "Текущий счёт: " + score;
+                    document.getElementById("score").innerText = "Счёт: " + score;
                     cheeses.splice(i, 1);
                     cheeses.push(randomPosition());
                     snake.push({ x: -20, y: -20 });
@@ -161,9 +158,12 @@
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = "lime";
-            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 20, 20));
+
+            snake.forEach((segment, index) => {
+                ctx.drawImage(yuraImg, segment.x, segment.y, 20, 20);
+                ctx.shadowColor = "lime";
+                ctx.shadowBlur = 8;
+            });
 
             cheeses.forEach(cheese => ctx.drawImage(cheeseImg, cheese.x, cheese.y, 20, 20));
             fishes.forEach(fish => ctx.drawImage(fishImg, fish.x, fish.y, 20, 20));
