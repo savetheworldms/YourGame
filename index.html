@@ -63,7 +63,7 @@
     </div>
 
     <script>
-        let canvas, ctx, snake, direction, cheese, fish, gameOver, speed, firstMove, score;
+        let canvas, ctx, snake, direction, cheese, fishes, gameOver, speed, firstMove, score;
         let eatSound = new Audio("https://www.fesliyanstudios.com/play-mp3/438");
 
         function init() {
@@ -76,11 +76,11 @@
             score = 0;
 
             do {
-                fish = randomPosition();
                 cheese = randomPosition();
                 snake = [randomPosition()];
-            } while (snake[0].x === fish.x && snake[0].y === fish.y);
+            } while (snake[0].x === cheese.x && snake[0].y === cheese.y);
 
+            fishes = [randomPosition()]; // Начальная корюшка
             direction = { x: 20, y: 0 };
             gameOver = false;
             speed = 150;
@@ -117,8 +117,8 @@
             // Рисуем сыр 🧀 (большой эмодзи)
             drawEmoji(cheese.x, cheese.y, "🧀");
 
-            // Рисуем корюшку 🐟 (большой эмодзи)
-            drawEmoji(fish.x, fish.y, "🐟");
+            // Рисуем всех корюшек 🐟
+            fishes.forEach(fish => drawEmoji(fish.x, fish.y, "🐟"));
         }
 
         function drawEmoji(x, y, emoji) {
@@ -131,8 +131,8 @@
 
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
 
-            // Проверка на столкновение с корюшкой (🐟)
-            if (newHead.x === fish.x && newHead.y === fish.y) {
+            // Проверка на столкновение с любой корюшкой
+            if (fishes.some(fish => fish.x === newHead.x && fish.y === newHead.y)) {
                 console.log("❌ ЮРА съел корюшку и проиграл!");
                 endGame();
                 return;
@@ -153,7 +153,7 @@
             // ЮРА съел сыр
             if (newHead.x === cheese.x && newHead.y === cheese.y) {
                 cheese = randomPosition();
-                fish = randomPosition();
+                fishes.push(randomPosition()); // Добавляем новую корюшку 🐟
                 speed *= 0.95;
                 score++;
                 document.getElementById("score").innerText = "Счёт: " + score;
