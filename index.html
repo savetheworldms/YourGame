@@ -71,7 +71,7 @@
         #restartBtn:hover {
             background: #32cd32;
         }
-        #score {
+        #score, #topScore {
             font-size: 24px;
             margin-top: 10px;
         }
@@ -86,9 +86,10 @@
 </head>
 <body>
     <h1>ЮРА 🐛</h1>
-    <p id="version">v1.6</p>
+    <p id="version">v1.8</p>
     <p>Собирай сыр-косичку (🧀) и избегай корюшку (🐟)!</p>
-    <p id="score">Счёт: 0</p>
+    <p id="score">Текущий счёт: 0</p>
+    <p id="topScore">Топ результат: 0</p>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
 
     <div id="gameOverScreen">
@@ -102,6 +103,7 @@
     <script>
         let canvas, ctx, snake, direction, cheeses, fishes, gameOver, speed, firstMove, score;
         let eatSound = new Audio("https://www.fesliyanstudios.com/play-mp3/438");
+        let topScore = localStorage.getItem("topScore") || 0;
 
         function init(extraCheese = 0, extraFish = 0) {
             console.log("🟢 Инициализация игры...");
@@ -109,7 +111,8 @@
             ctx = canvas.getContext("2d");
 
             document.getElementById("gameOverScreen").style.display = "none";
-            document.getElementById("score").innerText = "Счёт: 0";
+            document.getElementById("score").innerText = "Текущий счёт: 0";
+            document.getElementById("topScore").innerText = "Топ результат: " + topScore;
             score = 0;
 
             cheeses = [randomPosition()];
@@ -187,7 +190,7 @@
                     snake.push({ ...snake[snake.length - 1] }); // ЮРА растёт
                     speed *= 0.95;
                     score++;
-                    document.getElementById("score").innerText = "Счёт: " + score;
+                    document.getElementById("score").innerText = "Текущий счёт: " + score;
                     eatSound.play();
                 }
             });
@@ -210,27 +213,13 @@
 
         function endGame() {
             gameOver = true;
+            if (score > topScore) {
+                topScore = score;
+                localStorage.setItem("topScore", topScore);
+                document.getElementById("topScore").innerText = "Топ результат: " + topScore;
+            }
             document.getElementById("gameOverScreen").style.display = "block";
         }
-
-        function changeDirection(event) {
-            if (gameOver) return;
-            const key = event.key;
-            if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -20 };
-            else if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: 20 };
-            else if (key === "ArrowLeft" && direction.x === 0) direction = { x: -20, y: 0 };
-            else if (key === "ArrowRight" && direction.x === 0) direction = { x: 20, y: 0 };
-        }
-
-        document.getElementById("donateYura").addEventListener("click", () => {
-            let extraCheese = Math.floor(Math.random() * 5) + 1;
-            init(extraCheese, 0);
-        });
-
-        document.getElementById("donateAndrey").addEventListener("click", () => {
-            let extraFish = Math.floor(Math.random() * 5) + 1;
-            init(0, extraFish);
-        });
 
         document.getElementById("restartBtn").addEventListener("click", () => init());
         init();
